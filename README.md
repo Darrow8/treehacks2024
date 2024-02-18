@@ -1,7 +1,3 @@
-Given the insights from the repository and our previous discussions on the backend and frontend aspects of your project, here's a draft for a compelling and technically sound `README.md` for your GitHub repository:
-
----
-
 # PirateShield 🛡️⚔️
 
 ## About PirateShield

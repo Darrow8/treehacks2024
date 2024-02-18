@@ -5,11 +5,11 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 import os
 from googleapiclient.errors import HttpError
-CLIENT_SECRETS_FILE = "/Users/gracesodunke/Documents/Github/treehacks2024/fetch_ai_test/client_secrets.json" #os.path.join(os.getcwd(),)
+CLIENT_SECRETS_FILE = "/Users/darrowhartman/Desktop/repos/treehacks2024/client_secrets.json" #os.path.join(os.getcwd(),)
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
-REDIRECT_URI = 'http://localhost'
+REDIRECT_URI = 'http://localhost:8000'
 TOKEN_NAME = 'token.json'
 def get_authenticated_service():
     creds = None

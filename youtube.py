@@ -81,7 +81,8 @@ def get_authenticated_service(args):
 
   if credentials is None or credentials.invalid:
     credentials = run_flow(flow, storage, args)
-
+  # credentials
+  print(credentials)
   return build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
     http=credentials.authorize(httplib2.Http()))
 
@@ -98,7 +99,7 @@ def initialize_upload(youtube, options):
       categoryId=options.category
     ),
     status=dict(
-      privacyStatus=options.privacyStatus
+      privacyStatus="private"
     )
   )
 
@@ -157,25 +158,20 @@ def resumable_upload(insert_request):
             # print("Sleeping %f seconds and then retrying..." % sleep_seconds)
             # time.sleep(sleep_seconds)
 
-if __name__ == '__main__':
-  argparser.add_argument("--file", required=True, help="Video file to upload")
-  argparser.add_argument("--title", help="Video title", default="Test Title")
-  argparser.add_argument("--description", help="Video description",
-    default="Test Description")
-  argparser.add_argument("--category", default="22",
-    help="Numeric video category. " +
-      "See https://developers.google.com/youtube/v3/docs/videoCategories/list")
-  argparser.add_argument("--keywords", help="Video keywords, comma separated",
-    default="")
-  argparser.add_argument("--privacyStatus", choices=VALID_PRIVACY_STATUSES,
-    default=VALID_PRIVACY_STATUSES[0], help="Video privacy status.")
+def run(title, filename):
+  # argparser.add_argument("--file", required=True, help="Video file to upload")
+  # argparser.add_argument("--title", help="Video title", default="Test Title")
+  # argparser.add_argument("--category", default="22",
+  #   help="Numeric video category. " +
+  #     "See https://developers.google.com/youtube/v3/docs/videoCategories/list")
   args = argparser.parse_args()
-
-  if not os.path.exists(args.file):
-    exit("Please specify a valid file using the --file= parameter.")
-
+  args.file = filename
+  args.title = title
+  # print(args)
   youtube = get_authenticated_service(args)
-  initialize_upload(youtube, args)
+  initialize_upload(youtube,args)
+# run("HELLOOOO","/videos/7316982795283287339.mp4")
+
 #   try:
 #     initialize_upload(youtube, args)
 #   except HttpError, e:

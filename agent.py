@@ -6,9 +6,10 @@ import os
 import json
 import urllib.request
 from bs4 import BeautifulSoup
+import youtube as yt
 
 ydl_opts = {
-    'outtmpl': 'videos/%(id)s',
+    'outtmpl': 'videos/%(id)s.mp4',
 }
 
 ms_token = os.environ.get("ms_token", None) # get your own ms_token from your cookies on tiktok.com
@@ -20,50 +21,17 @@ async def trending_videos():
         async for video in api.trending.videos(count=1):
             print(video)
 
-            # urllib.request.urlretrieve(video.as_dict[], 'test.mp4') 
-            # print(video.as_dict)
-            # saveFile(video.as_dict)
-        
-async def movie_videos():
-    async with TikTokApi() as api:
-        await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3, 
-                                  headless=False, suppress_resource_load_types=["image", "media", "font", "stylesheet"])
-
-
-        async for video in api.search.videos("movies"):
-            # print("username: " + video.author.username)
-            # print("video id: " + video.id)
-            # print("stats: " + str(video.stats))
-
             with YoutubeDL(ydl_opts) as ydl:
                 ydl.download(["https://www.tiktok.com/@" + video.author.username + "/video/" + video.id])
 
+                yt.run(f"Test ${video.id}", f"videos/{video.id}.mp4")
 
 
 @alice.on_event("startup")
 async def say_hello(ctx: Context):
     
-    ctx.logger.info(f'hello, my name is {ctx.name}')
+    ctx.logger.info(f'downloading tiktok file')
 
-@alice.on_interval(period=2.0)
-async def say_hello(ctx: Context):
-    ctx.logger.info(f'Nice to meet you!')
-    
-
-# contents = urllib.request.urlopen("https://www.tiktok.com/search?q=movies").read()
-
-
-
-# # print(contents)
-# soup = BeautifulSoup(contents)
-# print(soup.prettify())
-# # data-e2e="search_top-item-list"
-# target_div = soup.find(attrs={"data-e2e": "search_top-item-list"})
-
-# print(target_div)
-# with open('save.html','w') as f:
-#     f.write(soup.prettify())
-
-# if __name__ == "__main__":
+if __name__ == "__main__":
     # alice.run()
-    # asyncio.run(movie_videos())
+    asyncio.run(trending_videos())

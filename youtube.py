@@ -81,22 +81,20 @@ def get_authenticated_service(args):
 
   if credentials is None or credentials.invalid:
     credentials = run_flow(flow, storage, args)
-  # credentials
-  print(credentials)
+
   return build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
     http=credentials.authorize(httplib2.Http()))
 
 def initialize_upload(youtube, options):
   tags = None
-  if options.keywords:
-    tags = options.keywords.split(",")
+  # if options.keywords:
+  #   tags = options.keywords.split(",")
 
   body=dict(
     snippet=dict(
       title=options.title,
-      description=options.description,
-      tags=tags,
-      categoryId=options.category
+      description="",
+      categoryId=""
     ),
     status=dict(
       privacyStatus="private"
@@ -159,20 +157,13 @@ def resumable_upload(insert_request):
             # time.sleep(sleep_seconds)
 
 def run(title, filename):
-  # argparser.add_argument("--file", required=True, help="Video file to upload")
-  # argparser.add_argument("--title", help="Video title", default="Test Title")
-  # argparser.add_argument("--category", default="22",
-  #   help="Numeric video category. " +
-  #     "See https://developers.google.com/youtube/v3/docs/videoCategories/list")
+  argparser.add_argument("--file", default=filename)
+  argparser.add_argument("--title", default=title)
+  argparser.add_argument("--category", default="22",
+    help="Numeric video category. " +
+      "See https://developers.google.com/youtube/v3/docs/videoCategories/list")
+  # argparser
   args = argparser.parse_args()
-  args.file = filename
-  args.title = title
-  # print(args)
   youtube = get_authenticated_service(args)
   initialize_upload(youtube,args)
-# run("HELLOOOO","/videos/7316982795283287339.mp4")
-
-#   try:
-#     initialize_upload(youtube, args)
-#   except HttpError, e:
-#     print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
+run("testAW","videos/7316982795283287339.mp4")

@@ -1,19 +1,33 @@
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
 import os
 from googleapiclient.errors import HttpError
 CLIENT_SECRETS_FILE = "/Users/gracesodunke/Documents/Github/treehacks2024/fetch_ai_test/client_secrets.json" #os.path.join(os.getcwd(),)
-
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
-REDIRECT_URI = 'http://localhost:58226'
+REDIRECT_URI = 'http://localhost'
+TOKEN_NAME = 'token.json'
 def get_authenticated_service():
-    flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
-    flow.redirect_uri = REDIRECT_URI
-    credentials = flow.run_local_server(port=0) #run_console()
-    return build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
+    creds = None
+    if os.path.exists(TOKEN_NAME):
+        creds = Credentials.from_authorized_user_file(TOKEN_NAME, SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                CLIENT_SECRETS_FILE, SCOPES)
+            flow.redirect_uri = REDIRECT_URI
+            creds = flow.run_console()
+        # Save the credentials for the next run
+        with open(TOKEN_NAME, 'w') as token:
+            token.write(creds.to_json())
+    return build(API_SERVICE_NAME, API_VERSION, credentials=creds)
 
 def upload_video(file_path, title, description, category_id, keywords):
     youtube = get_authenticated_service()
@@ -29,7 +43,6 @@ def upload_video(file_path, title, description, category_id, keywords):
             'privacyStatus': 'unlisted'
         }
     }
-    
    
     insert_request = youtube.videos().insert(
         part=','.join(body.keys()),
